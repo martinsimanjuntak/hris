@@ -12,6 +12,7 @@ import com.main.hris.service.AuthenticationService;
 import com.main.hris.util.JwtUtil;
 import com.main.hris.util.LmpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,17 +30,17 @@ import java.util.Map;
 public class AuthenticationController extends AProcessFlowController {
     @Autowired
     AuthenticationService authenticationService;
-    @Autowired
-    JwtUtil jwtUtil;
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<AuthenticationResponseDto>> login(@RequestBody AuthenticationRequestDto requestDto)
+    public ResponseEntity<ResponseStatusOnlyDto> login(@RequestBody AuthenticationRequestDto requestDto)
             throws ProcessFlowRuntimeException, ProcessFlowConfigurationException {
+        HttpHeaders headers = new HttpHeaders();
         if (authenticationService.Login(requestDto) == 1){
+            headers.set("Authorization", JwtUtil.generateToken(requestDto));
+            return ResponseEntity.ok().headers(headers)
+                    .body(new ResponseStatusOnlyDto(ResponseDtoStatusEnum.SUCCESS));
 
-            return  createResponse(new ResponseDto(ResponseDtoStatusEnum.SUCCESS,
-                    new AuthenticationResponseDto(jwtUtil.generateToken(requestDto.getUsername()))));
         }
-        return createResponse(new ResponseDto(ResponseDtoStatusEnum.ERROR, null));
+        return  createResponse(new ResponseStatusOnlyDto(ResponseDtoStatusEnum.ERROR));
 
     }
 //    public String login(@RequestBody AuthenticationRequestDto requestDto){

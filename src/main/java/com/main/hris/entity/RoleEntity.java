@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @ToString(callSuper = true)
 @Entity
 @EntityListeners({RoleEntityListener.class})
-@Table(name = "MSTR_ROLE")
+@Table(name = "LMP_ROLE")
 public class RoleEntity extends AMaintenanceEntity {
     @Column(name = "NAME")
     private String name;

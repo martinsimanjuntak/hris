@@ -1,14 +1,11 @@
 package com.main.hris.service;
 
-import com.main.hris.config.MapperConfig;
 import com.main.hris.dto.request.AuthenticationRequestDto;
 import com.main.hris.dto.response.FileResponseDto;
 import com.main.hris.entity.UserEntity;
 import com.main.hris.exception.UserException;
 import com.main.hris.repository.IUserRepository;
 import com.main.hris.util.LmpUtil;
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,8 +46,8 @@ public class AuthenticationService {
                 FileResponseDto fileResponseDto = new FileResponseDto();
                 fileResponseDto.setId(listMapList.get(i).get(0).get("id"));
                 fileResponseDto.setName(listMapList.get(i).get(1).get("name"));
-            fileResponseDto.setGrade(listMapList.get(i).get(2).get("grade"));
-            fileResponseDto.setGender(listMapList.get(i).get(3).get("gender"));
+                fileResponseDto.setGrade(listMapList.get(i).get(2).get("grade"));
+                fileResponseDto.setGender(listMapList.get(i).get(3).get("gender"));
                 fileResponseDto.setPhone(listMapList.get(i).get(4).get("phone"));
                 fileResponseDto.setAddress(listMapList.get(i).get(5).get("address"));
                 fileResponseDto.setUsername(listMapList.get(i).get(6).get("username"));

@@ -15,7 +15,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class AMaintenanceEntity extends BaseEntity {
     @Column(name = "IS_DELETE")
-    private String isDelete;
+    private boolean isDelete;
     @Column(name = "STATUS")
     private String status;
     @Column(name = "DETAILS")

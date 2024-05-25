@@ -19,7 +19,9 @@ public class AProcessFlowController extends ABaseController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseErrorDto> handleException(Exception e) {
         ResponseErrorDto errorDto = new ResponseErrorDto();
+        logger.error(e.getMessage(), e);
         errorDto.setStatus(ResponseDtoStatusEnum.ERROR);
+        errorDto.setMessage(e.getMessage());
         return createResponse(errorDto);
     }
 

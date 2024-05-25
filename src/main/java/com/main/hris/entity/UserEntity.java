@@ -21,15 +21,18 @@ import javax.persistence.Table;
 @ToString(callSuper = true)
 @Entity
 @EntityListeners({UserEntityListener.class})
-@Table(name = "MSTR_USER")
+@Table(name = "LMP_USER")
 public class UserEntity extends AMaintenanceEntity {
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")
     private RoleEntity role;
+
     @Column(name = "NAME")
     private String name;
+
     @Column(name = "USERNAME")
     private String username;
+
     @Column(name = "PASSWORD")
     private String password;
 }

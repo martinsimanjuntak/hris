@@ -1,39 +1,55 @@
 package com.main.hris.jwt;
 
-import com.main.hris.dto.request.AuthenticationRequestDto;
+import com.main.hris.dto.other.TokenUserDetails;
+import com.main.hris.service.UserDetailsServiceImplement;
 import com.main.hris.util.JwtUtil;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+@Component
+public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserDetailsServiceImplement userDetailsService;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest request,
-                                                HttpServletResponse response) throws AuthenticationException {
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
-        return authenticationManager.authenticate(authToken);
-    }
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
-        // Generate JWT token
-        String token = JwtUtil.generateToken(authResult.getName());
-        response.addHeader("Authorization", "Bearer " + token);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+        String authorizationHeader = request.getHeader("Authorization");
+
+        String username = null;
+        String jwt = null;
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwt = authorizationHeader.substring(7);
+            username = jwtUtil.extractUsername(jwt);
+        }
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+            if (jwtUtil.isTokenValid(jwt, userDetails.getUsername())) {
+                TokenUserDetails tokenUserDetails = (TokenUserDetails) userDetails;
+                PreAuthenticatedAuthenticationToken authenticationToken =
+                        new PreAuthenticatedAuthenticationToken(tokenUserDetails, null, tokenUserDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+        }
+        chain.doFilter(request, response);
     }
 }
