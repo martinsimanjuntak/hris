@@ -2,7 +2,6 @@ package com.main.hris.entity;
 
 import com.main.hris.entity.base.AMaintenanceEntity;
 import com.main.hris.entity.listener.RoleEntityListener;
-import com.main.hris.entity.listener.UserEntityListener;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,8 +18,8 @@ import javax.persistence.Table;
 @ToString(callSuper = true)
 @Entity
 @EntityListeners({RoleEntityListener.class})
-@Table(name = "LMP_ROLE")
+@Table(name = "lmp_role")
 public class RoleEntity extends AMaintenanceEntity {
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String name;
 }

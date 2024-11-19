@@ -13,7 +13,7 @@ public interface IUserRepository extends JpaRepository<UserEntity, String>, JpaS
     List<UserEntity> findUserByUsernameContaining(String username);
 
     @Query(value = "SELECT * FROM LMP_USER WHERE IS_DELETE = :isDelete", nativeQuery = true)
-    List<UserEntity> findAllByIsDelete(boolean isDelete);
+    List<UserEntity> findAllByIsDelete(int isDelete);
 
     Optional<UserEntity> findUserById(String id);
 

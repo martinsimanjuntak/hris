@@ -6,6 +6,7 @@ import com.main.hris.dto.response.ResponseStatusOnlyDto;
 import com.main.hris.dto.response.UserResponseDto;
 import com.main.hris.enumeration.ResponseDtoStatusEnum;
 import com.main.hris.service.UserService;
+import com.main.hris.util.LmpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +19,16 @@ public class UserController extends AProcessFlowController{
     @Autowired
     UserService userService;
 
+    private final String PATH = "user/";
+
     @PostMapping("register")
     public ResponseEntity<ResponseStatusOnlyDto> registerUser(@RequestBody UserRequestDto requestDto){
+        LmpUtil.validateUserAccess(PATH+"register");
         return createResponse(userService.registerUser(requestDto));
     }
 
     @GetMapping("getList")
-    public ResponseEntity<ResponseDto<List<UserResponseDto>>> getList(@RequestParam boolean isDelete){
+    public ResponseEntity<ResponseDto<List<UserResponseDto>>> getList(@RequestParam int isDelete){
         return createResponse(userService.findAllUserNameByIsDelete(isDelete));
     }
 

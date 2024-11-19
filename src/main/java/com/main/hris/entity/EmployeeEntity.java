@@ -8,13 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,23 +18,23 @@ import java.util.List;
 @ToString(callSuper = true)
 @Entity
 @EntityListeners({EmployeeEntityListener.class})
-@Table(name = "MSTR_EMPLOYEE")
+@Table(name = "lmp_employee")
 public class EmployeeEntity extends AMaintenanceEntity {
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
-    private List<UserEntity> user;
-    @Column(name = "ADDRESS")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "ID")
+    private UserEntity user;
+    @Column(name = "address")
     private String address;
-    @Column(name = "BIRTH_DATE")
+    @Column(name = "birthday_date")
     private LocalDateTime birthDate;
-    @Column(name = "GENDER")
+    @Column(name = "gender")
     private String gender;
-    @Column(name = "EMAIL")
+    @Column(name = "email")
     private String email;
-    @Column(name = "PHONE_NUMBER")
+    @Column(name = "phone_number")
     private String phoneNumber;
-    @Column(name = "DEPARTMENT")
+    @Column(name = "department")
     private String department;
-    @Column(name = "ENTRY_DATE")
+    @Column(name = "entry_date")
     private LocalDateTime entryDate;
 }

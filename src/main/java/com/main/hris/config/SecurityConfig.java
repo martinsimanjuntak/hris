@@ -26,20 +26,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .antMatchers("/user/register")
-                .permitAll()
-                .antMatchers(HttpMethod.POST,"/auth/login")
-                .permitAll()
-                .antMatchers(HttpMethod.POST,"/auth/file")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .csrf()
+            .disable()
+            .authorizeHttpRequests()
+            .antMatchers("/user/register")
+            .permitAll()
+            .antMatchers(HttpMethod.POST,"/auth/login")
+            .permitAll()
+            .antMatchers(HttpMethod.POST,"/auth/file")
+            .permitAll()
+            .anyRequest()
+            .authenticated()
+            .and()
+            .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
 

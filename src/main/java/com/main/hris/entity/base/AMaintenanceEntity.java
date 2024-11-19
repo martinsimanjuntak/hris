@@ -14,10 +14,10 @@ import javax.persistence.MappedSuperclass;
 @ToString(callSuper = true)
 @MappedSuperclass
 public class AMaintenanceEntity extends BaseEntity {
-    @Column(name = "IS_DELETE")
-    private boolean isDelete;
-    @Column(name = "STATUS")
+    @Column(name = "is_delete")
+    private Integer isDelete;
+    @Column(name = "status")
     private String status;
-    @Column(name = "DETAILS")
+    @Column(name = "details")
     private String details;
 }

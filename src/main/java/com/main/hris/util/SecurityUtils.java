@@ -22,15 +22,10 @@ public class SecurityUtils {
     }
 
     public static TokenUserDetails getUserDetails(Authentication authentication) throws ResponseStatusException {
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof TokenUserDetails) {
-                return (TokenUserDetails) principal;
-            } else {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-                        "Principal is not an instance of TokenUserDetails");
-            }
-        } else {
+        if (authentication != null && authentication.getPrincipal() instanceof TokenUserDetails) {
+            return (TokenUserDetails) authentication.getPrincipal();
+        }
+        else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is null");
         }
     }
