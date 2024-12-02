@@ -7,6 +7,7 @@ import com.main.hris.entity.UserEntity;
 import com.main.hris.exception.UserException;
 import com.main.hris.repository.IUserRepository;
 import com.main.hris.repository.IUserTokenRepository;
+import com.main.hris.service.token.TokenService;
 import com.main.hris.util.JwtUtil;
 import com.main.hris.util.LmpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,13 @@ import java.util.Optional;
 @Service
 public class AuthenticationService {
     @Autowired
-    IUserRepository userRepository;
+    private IUserRepository userRepository;
     @Autowired
-    IUserTokenRepository userTokenRepository;
+    private IUserTokenRepository userTokenRepository;
     @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private TokenService tokenService;
 
 
     public String login(AuthenticationRequestDto requestDto){
@@ -41,30 +44,11 @@ public class AuthenticationService {
             UserTokenRequestDto userTokenRequestDto = new UserTokenRequestDto();
             userTokenRequestDto.setToken(token);
             userTokenRequestDto.setName(userEntityOptional.get().getUsername());
-            LmpUtil.saveToken(userTokenRequestDto);
+            tokenService.saveToken(userEntityOptional.get().getUsername(), token);
             return token;
 
         }
         return null;
-
-    }
-
-    public List<FileResponseDto> file(MultipartFile file){
-        List<FileResponseDto> fileResponseDtolist = new ArrayList<>();
-        List<List<Map<String,String>>> listMapList =LmpUtil.listFieExcel(file);
-        for (int i = 0; i < listMapList.size(); i++) {
-                FileResponseDto fileResponseDto = new FileResponseDto();
-                fileResponseDto.setId(listMapList.get(i).get(0).get("id"));
-                fileResponseDto.setName(listMapList.get(i).get(1).get("name"));
-                fileResponseDto.setGrade(listMapList.get(i).get(2).get("grade"));
-                fileResponseDto.setGender(listMapList.get(i).get(3).get("gender"));
-                fileResponseDto.setPhone(listMapList.get(i).get(4).get("phone"));
-                fileResponseDto.setAddress(listMapList.get(i).get(5).get("address"));
-                fileResponseDto.setUsername(listMapList.get(i).get(6).get("username"));
-                fileResponseDtolist.add(fileResponseDto);
-
-        }
-        return fileResponseDtolist;
 
     }
 

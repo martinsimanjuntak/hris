@@ -6,9 +6,11 @@ import com.main.hris.enumeration.ResponseDtoStatusEnum;
 import com.main.hris.exception.ProcessFlowConfigurationException;
 import com.main.hris.exception.ProcessFlowRuntimeException;
 import com.main.hris.service.AuthenticationService;
-import com.main.hris.service.TokenBlacklistService;
+import com.main.hris.service.token.TokenBlacklistService;
+import com.main.hris.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,8 @@ public class AuthenticationController extends AProcessFlowController {
 
     @Autowired
     TokenBlacklistService tokenBlacklistService;
+
+
 
 
 
@@ -38,10 +42,19 @@ public class AuthenticationController extends AProcessFlowController {
 
     }
 
+    // Endpoint untuk melakukan logout
     @PostMapping("/logout")
-    public ResponseEntity<ResponseStatusOnlyDto> logout(@RequestHeader(value = "Authorization") String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        return createResponse(tokenBlacklistService.addTokenToBlacklist(token, 5));
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+        // Menghapus prefix "Bearer " dari token
+        String jwtToken = token.replace("Bearer ", "");
 
+        // Cek apakah token valid
+        if (!JwtUtil.validateToken(jwtToken)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid or expired token");
+        }
+        // Masukkan token ke dalam blacklist
+        tokenBlacklistService.blacklistToken(jwtToken);
+
+        return ResponseEntity.ok("Successfully logged out");
     }
 }

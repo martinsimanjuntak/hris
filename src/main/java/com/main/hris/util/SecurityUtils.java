@@ -26,7 +26,7 @@ public class SecurityUtils {
             return (TokenUserDetails) authentication.getPrincipal();
         }
         else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is null");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is nullLLL"+authentication.getPrincipal().getClass().getName());
         }
     }
 

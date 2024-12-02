@@ -1,12 +1,13 @@
 package com.main.hris.jwt;
 
 import com.main.hris.dto.other.TokenUserDetails;
-import com.main.hris.service.TokenBlacklistService;
 import com.main.hris.service.UserDetailsServiceImplement;
+import com.main.hris.service.token.TokenBlacklistService;
 import com.main.hris.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -19,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -41,13 +43,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
         String username = null;
-        String jwt = null;
+        String token = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
+            token = authorizationHeader.substring(7);
             try {
-                username = jwtUtil.extractUsername(jwt);
-                if (tokenBlacklistService.isTokenBlacklisted(jwt)) {
+                username = jwtUtil.extractUsername(token);
+                if (tokenBlacklistService.isTokenBlacklisted(token)) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
@@ -59,7 +61,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.isTokenValid(jwt, userDetails.getUsername())) {
+            if (jwtUtil.isTokenValid(token, userDetails.getUsername())) {
                 TokenUserDetails tokenUserDetails = (TokenUserDetails) userDetails;
                 PreAuthenticatedAuthenticationToken authenticationToken =
                         new PreAuthenticatedAuthenticationToken(tokenUserDetails,
@@ -71,6 +73,12 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 logger.debug("Invalid JWT token");
             }
         }
+
+        if (token != null && JwtUtil.validateToken(token) && tokenBlacklistService.isTokenBlacklisted(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has been blacklisted");
+                return;
+            }
+
         chain.doFilter(request, response);
     }
 }

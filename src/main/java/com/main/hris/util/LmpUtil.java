@@ -67,4 +67,9 @@ public class LmpUtil {
         tokenRepository.save(entity);
     }
 
+    public static void saveTokenToRadis(UserTokenRequestDto requestDto){
+        IUserTokenRepository tokenRepository = ApplicationContextProvider.getBean(IUserTokenRepository.class);
+
+    }
+
 }
